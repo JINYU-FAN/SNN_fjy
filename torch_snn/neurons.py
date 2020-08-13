@@ -7,14 +7,19 @@ class InputNeuron(Neuron):
         Neuron.__init__(self, n)
         self._step = 0
         self._length = 1
-        self.sequence = torch.zeros(1, n)
+        self.input([0])
         
     def input(self, sequence):
-        
-        self.sequence = sequence
+        if isinstance(sequence[0], list):
+            assert len(sequence) == self.size, "The input sequence has different size with the neurons."
+            self.sequence = torch.Tensor(sequence)
+            self._length = len(self.sequence[0])
+        else:
+            self._length = len(sequence)
+            self.sequence = torch.Tensor([sequence]*self.size)
 
     def update(self):
-        self.spike = self.sequence[self._step]
+        self.spike = self.sequence[:,self._step]
         self._step += 1
         if self._step == self._length:
             self._step = 0
