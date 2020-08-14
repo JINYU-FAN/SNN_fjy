@@ -3,13 +3,14 @@ import torch
 
 NEURONS = []
 SYNAPSES = []
+MONITORS = []
 
 class Neuron(metaclass = abc.ABCMeta):
     @abc.abstractmethod
     def __init__(self, n):
         NEURONS.append(self)
         self.size = n
-        self.spike = (torch.rand(n) > 0.5).int() # The neurons are initiated with 50% of probability to spike
+        self.spike = (torch.rand(n) < 0).int() # The neurons are initiated with 50% of probability to spike
 
     @abc.abstractmethod
     def update(self):
@@ -18,9 +19,22 @@ class Neuron(metaclass = abc.ABCMeta):
 
 class Synapse(metaclass = abc.ABCMeta):
     @abc.abstractmethod
-    def __init__(self):
+    def __init__(self, pre, post):
         SYNAPSES.append(self)
+        self.pre = pre
+        self.post = post
 
     @abc.abstractmethod
     def update(self):
         pass    
+
+
+
+class Monitor(metaclass = abc.ABCMeta):
+    @abc.abstractmethod
+    def __init__(self):
+        MONITORS.append(self)
+
+    @abc.abstractmethod
+    def update(self):
+        pass   

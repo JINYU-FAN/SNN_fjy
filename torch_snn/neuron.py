@@ -1,5 +1,4 @@
 from .abstract import Neuron
-from matplotlib import pyplot as plt
 import torch
 
 class InputNeuron(Neuron):
@@ -32,23 +31,51 @@ class LinearNeuron(Neuron):
     def __init__(self, n):
         Neuron.__init__(self, n)
         self.v = torch.zeros(n)
-        self.I = 0 # The overall current input for the neuron
+        self._I = 0 # The overall current input for the neuron
         self.Iex = 0 # External current by electrode
     
     def update(self):
-        self.I = self.Iex
-        self.v += self.I
+        self._I = self.Iex
+        self.v += self._I
         if self.v > 60:
             self.spike = 1
             self.v = 0
         else:
             self.spike = 0
-        self.I = 0
+        self._I = 0
         Neuron.update(self)
 
 class LIFNeuron(Neuron):
-    def __init__(self):
-        pass
+    dt = 0.001
+    Rm = 1e6
+    Cm = 3e-8
+    Vresting = -0.06
+    Vthresh = -0.045
+    Vreset = -0.06
+    Vinit = -0.06
+    Trefract = 3e-3
+    Inoise = 0 # 1e-5
+    def __init__(self, n):
+        Neuron.__init__(self, n)
+        self.v = torch.zeros(n)
+        self._I = torch.zeros(n)
+        self.Iex = torch.randn(n)*0.000001
+        self.last_spike_time = torch.ones(n) * 10000
 
     def update(self):
-        pass
+        self._I = self.Iex
+        self.v += ((self.Vresting - self.v)/self.Rm + self._I) * self.dt / self.Cm  
+        self.spike = (self.v > self.Vthresh) & (self.last_spike_time > self.Trefract)
+        self.v = self.spike * self.Vreset + ~self.spike * self.v
+        self.last_spike_time += self.dt
+        self.last_spike_time = self.spike * 0 + ~self.spike * self.last_spike_time
+        self._I = torch.zeros(self.size)
+        Neuron.update(self)
+
+
+class IzhikevichNeuron(Neuron):
+    def __init__(self, n):
+        Neuron.__init__(self, n)
+
+    def update(self):
+        Neuron.update(self)
