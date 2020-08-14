@@ -11,6 +11,7 @@ class Neuron(metaclass = abc.ABCMeta):
         NEURONS.append(self)
         self.size = n
         self.spike = (torch.rand(n) < 0).int() # The neurons are initiated with 50% of probability to spike
+        self.Isyn = torch.zeros(n)
 
     @abc.abstractmethod
     def update(self):
@@ -23,10 +24,14 @@ class Synapse(metaclass = abc.ABCMeta):
         SYNAPSES.append(self)
         self.pre = pre
         self.post = post
+        self.size = (self.pre.size, self.post.size)
+        self.w = torch.zeros(self.pre.size, self.post.size)
 
     @abc.abstractmethod
     def update(self):
-        pass    
+        self.post.Isyn = torch.mm(torch.unsqueeze(self.pre.spike.float(), 0), self.w).squeeze()
+
+
 
 
 

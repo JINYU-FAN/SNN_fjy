@@ -1,6 +1,7 @@
 from .abstract import Monitor, Neuron, Synapse
 from matplotlib import pyplot as plt
 import torch
+import copy
 
 class VoltageMonitor(Monitor):
     def __init__(self, neurons):
@@ -10,7 +11,7 @@ class VoltageMonitor(Monitor):
         self.history = []
 
     def update(self):
-        self.history.append(self.neurons.v)
+        self.history.append(copy.deepcopy(self.neurons.v))
         Monitor.update(self)
 
     def plot(self, index = None):
@@ -34,7 +35,7 @@ class SpikeMonitor(Monitor):
         self.history = []
 
     def update(self):
-        self.history.append(self.neurons.spike)
+        self.history.append(copy.deepcopy(self.neurons.spike))
         Monitor.update(self)
 
     def plot(self, index=None):
@@ -52,3 +53,30 @@ class SpikeMonitor(Monitor):
             plt.scatter(steps, history)
         plt.show()
 
+class SynapseMonitor(Monitor):
+    def __init__(self, synapses):
+        assert isinstance(synapses, Synapse), 'SynapseMonitor can only be used to monitor synapse obejct.'
+        Monitor.__init__(self)
+        self.synapses = synapses
+        self.history = []
+
+    def update(self):
+        self.history.append(copy.deepcopy(self.synapses.w))
+        Monitor.update(self)
+        print(self.history)
+
+    def plot(self, *args):
+        if args == ():
+            indexs1 = range(self.synapses.size[0])
+            indexs2 = range(self.synapses.size[1])
+        else:
+            assert len(args) == 2, 'You should use two integer to determine the synapse.'
+            indexs1 = (args[0],)
+            indexs2 = (args[1],)
+        for i in indexs1:
+            for j in indexs2:
+                history = []
+                for w in self.history:
+                    history.append(w[i][j])
+                plt.plot(history)
+        plt.show()

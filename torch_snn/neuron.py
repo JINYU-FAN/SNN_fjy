@@ -2,11 +2,13 @@ from .abstract import Neuron
 import torch
 
 class InputNeuron(Neuron):
+    dt = 0.001
     def __init__(self, n):
         Neuron.__init__(self, n)
         self._step = 0
         self._length = 1
         self.input([0])
+        self.last_spike_time = torch.ones(n) * 10000
         
     def input(self, sequence):
         if isinstance(sequence[0], list):
@@ -19,6 +21,8 @@ class InputNeuron(Neuron):
 
     def update(self):
         self.spike = self.sequence[:,self._step]
+        self.last_spike_time += self.dt
+        self.last_spike_time = self.spike * 0 + (1-self.spike) * self.last_spike_time        
         self._step += 1
         if self._step == self._length:
             self._step = 0
@@ -35,7 +39,7 @@ class LinearNeuron(Neuron):
         self.Iex = 0 # External current by electrode
     
     def update(self):
-        self._I = self.Iex
+        self._I = self.Iex + self.Isyn
         self.v += self._I
         if self.v > 60:
             self.spike = 1
@@ -57,13 +61,13 @@ class LIFNeuron(Neuron):
     Inoise = 0 # 1e-5
     def __init__(self, n):
         Neuron.__init__(self, n)
-        self.v = torch.zeros(n)
+        self.v = torch.ones(n) * self.Vresting
         self._I = torch.zeros(n)
         self.Iex = torch.randn(n)*0.000001
         self.last_spike_time = torch.ones(n) * 10000
 
     def update(self):
-        self._I = self.Iex
+        self._I = self.Iex + self.Isyn
         self.v += ((self.Vresting - self.v)/self.Rm + self._I) * self.dt / self.Cm  
         self.spike = (self.v > self.Vthresh) & (self.last_spike_time > self.Trefract)
         self.v = self.spike * self.Vreset + ~self.spike * self.v
