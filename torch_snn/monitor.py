@@ -63,7 +63,6 @@ class SynapseMonitor(Monitor):
     def update(self):
         self.history.append(copy.deepcopy(self.synapses.w))
         Monitor.update(self)
-        print(self.history)
 
     def plot(self, *args):
         if args == ():

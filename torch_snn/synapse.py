@@ -13,8 +13,8 @@ class FixedSynapse(Synapse):
 class STDPSynapse(Synapse):
     Ap = 1 # A+
     Am = 1 # A-
-    taup = 0.01 # second
-    taum = 0.015 # second
+    taup = 0.001 # second
+    taum = 0.0015 # second
     def __init__(self, pre, post):
         Synapse.__init__(self, pre, post)
 
