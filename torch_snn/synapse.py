@@ -40,3 +40,27 @@ class STDPSynapse(Synapse):
         self.w -= torch.mm(self.pre.spike.unsqueeze(1).float(), dw.unsqueeze(0)) * self.lr
         self.w *= self._connection
 
+
+class ExcitorySynapse(STDPSynapse):
+    def __init__(self, pre, post, connection = None):
+        STDPSynapse.__init__(self, pre, post, connection)
+        self.w = torch.clamp(self.w, min = 0)
+
+
+    def update(self):
+        STDPSynapse.update(self)
+        self.w = torch.clamp(self.w, min = 0)
+
+
+class InhibitorySynapse(STDPSynapse):
+    '''
+    I am still not sure about the learning rule of inhibitory neuron.
+
+    '''
+    def __init__(self, pre, post, connection = None):
+        STDPSynapse.__init__(self, pre, post, connection)
+        self.w = torch.clamp(self.w, max = 0)
+
+    def update(self):
+        STDPSynapse.update(self)
+        self.w = torch.clamp(self.w, max = 0)
