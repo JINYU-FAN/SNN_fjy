@@ -11,17 +11,17 @@ n1.input([[0,0,0,0,0],[1,0,1,0,0]])
 
 n2 = InputNeuron(3)
 n2.input([[0,1,0,0,0],[0,0,0,0,0],[0,0,0,0,0]])
-s = STDPSynapse(n1, n2)
+s = STDPSynapse(n1, n2, torch.Tensor([[1., 1, 1.],[1, 0., 1.]]))
+print(s.connection)
 s.w = torch.randn(2,3)*10
 m1 = SynapseMonitor(s)
 m2 = SpikeMonitor(n1)
 m3 = SpikeMonitor(n2)
 
-s.lr = 1
 for i in range(100): 
     update()
 
-m1.plot(1, 0)
+m1.plot()
 
 
 
