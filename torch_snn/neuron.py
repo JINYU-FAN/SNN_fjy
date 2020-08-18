@@ -13,7 +13,6 @@ class PoissonNeuron(Neuron):
 
     def update(self):
         self.spike = torch.rand(self.size, 1) < self.image
-        print(self)
         Neuron.update(self)
 
 

@@ -2,6 +2,8 @@ from .abstract import Monitor, Neuron, Synapse
 from matplotlib import pyplot as plt
 import torch
 import copy
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
 
 class VoltageMonitor(Monitor):
     def __init__(self, neurons):
@@ -79,3 +81,30 @@ class SynapseMonitor(Monitor):
                     history.append(w[i][j])
                 plt.plot(history)
         plt.show()
+
+
+class ImageVisualizer():
+    def __init__(self, data, filename):
+        
+        self.data = data.history
+        self.frame = -1
+        fig, ax = plt.subplots()
+        g = self.generate_data()
+        self.mat = ax.matshow(self.generate_data())
+        str(1)
+        ani = FuncAnimation(fig, self.update, self.data_gen, repeat = False, interval = 100)
+        str(1)
+        print(ani.save)
+        ani.save(filename)
+
+    def generate_data(self):
+        return self.data[self.frame]
+
+    def update(self, data):
+        self.mat.set_data(data)
+        return self.mat
+
+    def data_gen(self):
+        for i in range(len(self.data)-2):
+            self.frame += 1
+            yield self.generate_data()
