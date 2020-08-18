@@ -1,6 +1,15 @@
 from .abstract import Neuron
 import torch
 
+class PoissonNeuron(Neuron):
+    def __init__(self, n):
+        Neuron.__init__(self, n)
+
+
+    def update(self, n):
+        Neuron.update(self)
+
+
 class InputNeuron(Neuron):
     dt = 0.001
     def __init__(self, n):
