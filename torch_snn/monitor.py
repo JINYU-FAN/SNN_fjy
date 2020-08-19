@@ -1,5 +1,5 @@
 from .abstract import Monitor, Neuron, Synapse
-from matplotlib import pyplot as plt
+import matplotlib.pyplot as plt
 import torch
 import copy
 import matplotlib.pyplot as plt
@@ -91,10 +91,7 @@ class ImageVisualizer():
         fig, ax = plt.subplots()
         g = self.generate_data()
         self.mat = ax.matshow(self.generate_data())
-        str(1)
         ani = FuncAnimation(fig, self.update, self.data_gen, repeat = False, interval = 100)
-        str(1)
-        print(ani.save)
         ani.save(filename)
 
     def generate_data(self):
