@@ -98,7 +98,7 @@ class ImageVisualizer():
         ani.save(filename)
 
     def generate_data(self):
-        return self.data[self.frame]
+        return self.data[self.frame].reshape(28,28)
 
     def update(self, data):
         self.mat.set_data(data)
