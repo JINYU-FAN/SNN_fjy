@@ -32,9 +32,6 @@ class Synapse(metaclass = abc.ABCMeta):
         self.post.Isyn = torch.mm(torch.unsqueeze(self.pre.spike.float(), 0), self.w).squeeze()
 
 
-
-
-
 class Monitor(metaclass = abc.ABCMeta):
     @abc.abstractmethod
     def __init__(self):

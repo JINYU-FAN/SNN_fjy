@@ -3,16 +3,20 @@ import torch
 
 
 class PoissonNeuron(Neuron):
+    dt = 0.001
     def __init__(self, n):
         Neuron.__init__(self, n)
-        self.image = torch.rand(self.size, 1)
+        self.image = torch.rand(self.size)
+        self.last_spike_time = torch.ones(n) * 10000
 
     def input(self, image):
         assert self.image.view(-1, 1).shape == (self.size, 1),"The shape of the image is not compatible."
-        self.image = image.view(-1, 1)
+        self.image = image.view(-1)
 
     def update(self):
-        self.spike = torch.rand(self.size, 1) < self.image
+        self.spike = torch.rand(self.size) < self.image
+        self.last_spike_time += self.dt
+        self.last_spike_time = self.spike * 0 + ~self.spike * self.last_spike_time     
         Neuron.update(self)
 
 

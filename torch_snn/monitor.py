@@ -84,9 +84,11 @@ class SynapseMonitor(Monitor):
 
 
 class ImageVisualizer():
-    def __init__(self, data, filename):
-        
-        self.data = data.history
+    def __init__(self, data, size, filename):
+        self.data = []
+        for img in data.history:
+            self.data.append(img.reshape(size))
+
         self.frame = -1
         fig, ax = plt.subplots()
         g = self.generate_data()
@@ -95,7 +97,7 @@ class ImageVisualizer():
         ani.save(filename)
 
     def generate_data(self):
-        return self.data[self.frame].reshape(28,28)
+        return self.data[self.frame]
 
     def update(self, data):
         self.mat.set_data(data)
