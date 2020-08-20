@@ -27,6 +27,11 @@ class VoltageMonitor(Monitor):
                 history.append(v[index])
             plt.plot(history)
         plt.show()
+
+    def record(self, filename, size = None):
+        if size == None:
+            size = (self.neurons.size,1)
+        ImageVisualizer(self, size, filename)
         
 
 class SpikeMonitor(Monitor):
@@ -54,6 +59,12 @@ class SpikeMonitor(Monitor):
                     history.append(int(spike[index])*index)
             plt.scatter(steps, history)
         plt.show()
+
+    def record(self, filename, size = None):
+        if size == None:
+            size = (self.neurons.size,1)
+        ImageVisualizer(self, size, filename, vmin=0, vmax=1)
+
 
 class SynapseMonitor(Monitor):
     def __init__(self, synapses):
@@ -84,7 +95,7 @@ class SynapseMonitor(Monitor):
 
 
 class ImageVisualizer():
-    def __init__(self, data, size, filename):
+    def __init__(self, data, size, filename, vmin=None, vmax=None):
         self.data = []
         for img in data.history:
             self.data.append(img.reshape(size))
@@ -92,7 +103,7 @@ class ImageVisualizer():
         self.frame = -1
         fig, ax = plt.subplots()
         g = self.generate_data()
-        self.mat = ax.matshow(self.generate_data())
+        self.mat = ax.matshow(self.generate_data(), vmin = vmin, vmax = vmax)
         ani = FuncAnimation(fig, self.update, self.data_gen, repeat = False, interval = 100)
         ani.save(filename)
 
