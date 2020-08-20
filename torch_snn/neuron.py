@@ -98,8 +98,29 @@ class LIFNeuron(Neuron):
 
 
 class IzhikevichNeuron(Neuron):
+    Vthresh = 30.
+    a = 0.02
+    b = 0.2
+    c = -55#-65.
+    d = 2.
     def __init__(self, n):
         Neuron.__init__(self, n)
+        self.v = torch.ones(n) * self.c
+        self.u = torch.zeros(n)
+        self._I = torch.zeros(n)
+        self.Iex = torch.randn(n)*0.000001
+        self.last_spike_time = torch.ones(n) * 10000
 
     def update(self):
+        self._I = self.Iex + self.Isyn
+        dv = 0.04*self.v**2 + 5.*self.v + 140. - self.u + self._I
+        self.v += dv
+        du = self.a * (self.b * self.v - self.u)
+        self.u += du
+        self.spike = (self.v > self.Vthresh)
+        self.v = self.spike * self.c + ~self.spike * self.v
+        self.u += self.spike * self.d
         Neuron.update(self)
+
+
+

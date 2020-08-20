@@ -7,20 +7,20 @@ from dataset import mnist
 
 n1 = PoissonNeuron(28*28)
 n2 = LIFNeuron(100)
-n3 = LIFNeuron(100)
+#n3 = LIFNeuron(100)
 m1 = SpikeMonitor(n2)
 m2 = VoltageMonitor(n2)
 s1 = STDPSynapse(n1,n2)
-s1.randomize(0.3,0.7)
-s2 = ExcitorySynapse(n2, n3, connection=torch.eye(100))
-s2.randomize(10, 50)
+s1.randomize(0.0000000001,0.000000001)
+#s2 = ExcitorySynapse(n2, n3, connection=torch.eye(100))
+#s2.randomize(10, 50)
 #s3 = InhibitorySynapse(n3, n2, connection=1-torch.eye(100))
 #s3.randomize(-50,-50)
 
 x = 0
 for image, label in mnist.train_loader:
     n1.input(image[0][0])
-    for j in range(10):
+    for j in range(350):
         update()
     x += 1
     if x == 10:
