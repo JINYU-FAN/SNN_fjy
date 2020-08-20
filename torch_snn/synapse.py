@@ -6,9 +6,10 @@ class FixedSynapse(Synapse):
         Synapse.__init__(self, pre, post)
 
 
-    def update(self):
-        
+    def update(self):   
         Synapse.update(self)
+
+
 
 class STDPSynapse(Synapse):
     Ap = 1 # A+
@@ -40,6 +41,9 @@ class STDPSynapse(Synapse):
         self.w -= torch.mm(self.pre.spike.unsqueeze(1).float(), dw.unsqueeze(0)) * self.lr
         self.w *= self._connection
 
+    def randomize(self, min, max):
+        Synapse.randomize(self, min, max)
+        self.w *= self._connection
 
 class ExcitorySynapse(STDPSynapse):
     def __init__(self, pre, post, connection = None):
@@ -51,16 +55,25 @@ class ExcitorySynapse(STDPSynapse):
         STDPSynapse.update(self)
         self.w = torch.clamp(self.w, min = 0)
 
+    def randomize(self, min, max):
+        STDPSynapse.randomize(self, min, max)
+        self.w = torch.clamp(self.w, min = 0)
+
 
 class InhibitorySynapse(STDPSynapse):
     '''
     I am still not sure about the learning rule of inhibitory neuron.
-
     '''
+    Ap = -1
+    Am = -1
     def __init__(self, pre, post, connection = None):
         STDPSynapse.__init__(self, pre, post, connection)
         self.w = torch.clamp(self.w, max = 0)
 
     def update(self):
         STDPSynapse.update(self)
+        self.w = torch.clamp(self.w, max = 0)
+
+    def randomize(self, min, max):
+        STDPSynapse.randomize(self, min, max)
         self.w = torch.clamp(self.w, max = 0)

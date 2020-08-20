@@ -20,6 +20,7 @@ class PoissonNeuron(Neuron):
         Neuron.update(self)
 
 
+
 class InputNeuron(Neuron):
     dt = 0.001
     def __init__(self, n):

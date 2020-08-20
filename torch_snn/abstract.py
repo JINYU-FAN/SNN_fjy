@@ -18,6 +18,7 @@ class Neuron(metaclass = abc.ABCMeta):
         pass
 
 
+
 class Synapse(metaclass = abc.ABCMeta):
     @abc.abstractmethod
     def __init__(self, pre, post):
@@ -31,6 +32,8 @@ class Synapse(metaclass = abc.ABCMeta):
     def update(self):
         self.post.Isyn = torch.mm(torch.unsqueeze(self.pre.spike.float(), 0), self.w).squeeze()
 
+    def randomize(self, min, max):
+        self.w = torch.rand(self.size) * (max - min) + min
 
 class Monitor(metaclass = abc.ABCMeta):
     @abc.abstractmethod
